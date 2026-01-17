@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 
+import '../../app/widgets/app_snackbar.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -98,8 +100,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           verificationFailed: (FirebaseAuthException e) async {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Verifica fallita: ${e.message ?? e.code}')),
+              AppSnackBar.show(
+                context,
+                'Verifica fallita: ${e.message ?? e.code}',
+                type: AppSnackBarType.error,
               );
             }
             if (!completer.isCompleted) completer.complete(false);
@@ -197,8 +201,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (!ok) {
           // Resta nella pagina, così l’utente può riprovare
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Verifica telefono non completata')),
+            AppSnackBar.show(
+              context,
+              'Verifica telefono non completata',
+              type: AppSnackBarType.warning,
             );
           }
           return;
@@ -206,14 +212,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profilo salvato ✅')),
+      AppSnackBar.show(
+        context,
+        'Profilo salvato ✅',
+        type: AppSnackBarType.success,
       );
       context.pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e')),
+      AppSnackBar.show(
+        context,
+        'Errore: $e',
+        type: AppSnackBarType.error,
       );
     } finally {
       if (mounted) setState(() => _loading = false);
