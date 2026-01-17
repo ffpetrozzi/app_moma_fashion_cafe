@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66725570184",
+    "project_id": "app-moma-fashion-cafe",
+    "storage_bucket": "app-moma-fashion-cafe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66725570184:android:620ed34a70b221a48de13d",
+        "android_client_info": {
+          "package_name": "com.example.app_moma_fashion_cafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMXyX-jl1YZHu5j9Rod-fv5c4bILo0IG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
