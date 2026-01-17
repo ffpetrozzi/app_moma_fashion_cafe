@@ -12,17 +12,6 @@ class CartScreen extends StatelessWidget {
     final accent = const Color(0xFFB5654B);
     final accentDark = const Color(0xFF7A3E2B);
     final cream = const Color(0xFFF7F2EC);
-    final cardDecoration = BoxDecoration(
-      color: Colors.white.withOpacity(0.92),
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.06),
-          blurRadius: 14,
-          offset: const Offset(0, 8),
-        ),
-      ],
-    );
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -57,15 +46,7 @@ class CartScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: cart.items.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Carrello vuoto',
-                            style: TextStyle(
-                              color: accentDark.withOpacity(0.6),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        )
+                      ? const Center(child: Text('Carrello vuoto'))
                       : ListView.separated(
                           itemCount: cart.items.length,
                           separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -73,57 +54,46 @@ class CartScreen extends StatelessWidget {
                             final it = cart.items[i];
                             return Container(
                               padding: const EdgeInsets.all(14),
-                              decoration: cardDecoration,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.92),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 14,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          it.name,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: accentDark,
-                                          ),
-                                        ),
+                                        Text(it.name,
+                                            style: const TextStyle(
+                                                fontSize: 16, fontWeight: FontWeight.w800)),
                                         const SizedBox(height: 4),
                                         Text(it.variantLabel,
                                             style: const TextStyle(color: Colors.black54)),
                                         const SizedBox(height: 6),
-                                        Text(
-                                          '€${it.price.toStringAsFixed(2)}',
-                                          style: TextStyle(
-                                            color: accentDark.withOpacity(0.8),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
+                                        Text('€${it.price.toStringAsFixed(2)}'),
                                       ],
                                     ),
                                   ),
                                   IconButton(
                                     onPressed: () => cart.dec(it.key),
                                     icon: const Icon(Icons.remove_circle_outline),
-                                    color: accentDark,
                                   ),
-                                  Text(
-                                    '${it.qty}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: accentDark,
-                                    ),
-                                  ),
+                                  Text('${it.qty}', style: const TextStyle(fontSize: 16)),
                                   IconButton(
                                     onPressed: () => cart.inc(it.key),
                                     icon: const Icon(Icons.add_circle_outline),
-                                    color: accentDark,
                                   ),
                                   IconButton(
                                     onPressed: () => cart.remove(it.key),
                                     icon: const Icon(Icons.delete_outline),
-                                    color: accentDark,
                                   ),
                                 ],
                               ),
@@ -134,17 +104,23 @@ class CartScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.all(14),
-                  decoration: cardDecoration,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.92),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 14,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(
                           'Totale: €${cart.total.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: accentDark,
-                          ),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                         ),
                       ),
                       ElevatedButton(
@@ -166,10 +142,6 @@ class CartScreen extends StatelessWidget {
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: accentDark,
-                      side: BorderSide(color: accentDark.withOpacity(0.4)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
                     ),
                     onPressed: cart.clear,
                     child: const Text('Svuota carrello'),
