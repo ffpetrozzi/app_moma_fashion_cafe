@@ -43,17 +43,33 @@ class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final accentDark = const Color(0xFF7A3E2B);
 
     if (user == null) {
       return Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
           ),
           title: const Text('I miei ordini'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: accentDark,
         ),
-        body: const Center(child: Text('Devi essere loggato')),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF9F5F1), Color(0xFFEDE1D7)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: const SafeArea(
+            child: Center(child: Text('Devi essere loggato')),
+          ),
+        ),
       );
     }
 
@@ -63,12 +79,16 @@ class OrdersScreen extends StatelessWidget {
         .orderBy('createdAt', descending: true);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
         title: const Text('I miei ordini'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: accentDark,
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -76,110 +96,125 @@ class OrdersScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: q.snapshots(),
-        builder: (context, snap) {
-          if (snap.hasError) {
-            return Center(child: Text('Errore: ${snap.error}'));
-          }
-          if (!snap.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF9F5F1), Color(0xFFEDE1D7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: q.snapshots(),
+            builder: (context, snap) {
+              if (snap.hasError) {
+                return Center(child: Text('Errore: ${snap.error}'));
+              }
+              if (!snap.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final docs = snap.data!.docs;
+              final docs = snap.data!.docs;
 
-          if (docs.isEmpty) {
-            return const Center(child: Text('Nessun ordine ancora 🍸'));
-          }
+              if (docs.isEmpty) {
+                return const Center(child: Text('Nessun ordine ancora 🍸'));
+              }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: docs.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, i) {
-              final doc = docs[i];
-              final data = doc.data();
-
-              final status = (data['status'] ?? 'pending').toString();
-              final total = (data['total'] as num?)?.toDouble() ?? 0.0;
-              final payment = (data['paymentMethod'] ?? '').toString();
-
-              final items = (data['items'] as List?) ?? [];
-              final itemsCount = items.fold<int>(0, (s, e) {
-                final m = (e as Map?)?.cast<String, dynamic>() ?? {};
-                final qty = (m['qty'] as num?)?.toInt() ?? 0;
-                return s + qty;
-              });
-
-              final createdAt = (data['createdAt'] as Timestamp?);
-              final dateStr = createdAt == null
-                  ? '—'
-                  : _formatDate(createdAt.toDate());
-
-              return Container(
+              return ListView.separated(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Ordine #${doc.id.substring(0, 6).toUpperCase()}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _statusColor(status).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            _statusLabel(status),
-                            style: TextStyle(
-                              color: _statusColor(status),
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
+                itemCount: docs.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, i) {
+                  final doc = docs[i];
+                  final data = doc.data();
+
+                  final status = (data['status'] ?? 'pending').toString();
+                  final total = (data['total'] as num?)?.toDouble() ?? 0.0;
+                  final payment = (data['paymentMethod'] ?? '').toString();
+
+                  final items = (data['items'] as List?) ?? [];
+                  final itemsCount = items.fold<int>(0, (s, e) {
+                    final m = (e as Map?)?.cast<String, dynamic>() ?? {};
+                    final qty = (m['qty'] as num?)?.toInt() ?? 0;
+                    return s + qty;
+                  });
+
+                  final createdAt = (data['createdAt'] as Timestamp?);
+                  final dateStr = createdAt == null ? '—' : _formatDate(createdAt.toDate());
+
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 14,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text('Data: $dateStr'),
-                    const SizedBox(height: 4),
-                    Text('Articoli: $itemsCount'),
-                    const SizedBox(height: 4),
-                    Text('Pagamento: ${payment == 'cash' ? 'Contanti' : 'Carta'}'),
-                    const SizedBox(height: 10),
-                    Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Expanded(
-                          child: Text(
-                            'Totale',
-                            style: TextStyle(fontWeight: FontWeight.w800),
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Ordine #${doc.id.substring(0, 6).toUpperCase()}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: _statusColor(status).withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                _statusLabel(status),
+                                style: TextStyle(
+                                  color: _statusColor(status),
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          '€${total.toStringAsFixed(2)}',
-                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        const SizedBox(height: 8),
+                        Text('Data: $dateStr'),
+                        const SizedBox(height: 4),
+                        Text('Articoli: $itemsCount'),
+                        const SizedBox(height: 4),
+                        Text('Pagamento: ${payment == 'cash' ? 'Contanti' : 'Carta'}'),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                'Totale',
+                                style: TextStyle(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            Text(
+                              '€${total.toStringAsFixed(2)}',
+                              style: const TextStyle(fontWeight: FontWeight.w800),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+        ),
       ),
     );
   }
