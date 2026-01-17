@@ -223,17 +223,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final accent = const Color(0xFFB5654B);
+    final accentDark = const Color(0xFF7A3E2B);
+    final cream = const Color(0xFFF7F2EC);
 
     if (user == null) {
       return Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
           ),
           title: const Text('Profilo'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: accentDark,
         ),
-        body: const Center(child: Text('Devi essere loggato')),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF9F5F1), Color(0xFFEDE1D7)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: const SafeArea(
+            child: Center(child: Text('Devi essere loggato')),
+          ),
+        ),
       );
     }
 
@@ -242,12 +260,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
         title: const Text('Profilo'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: accentDark,
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -255,140 +277,183 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: userDoc.snapshots(),
-        builder: (context, snap) {
-          final data = snap.data?.data() ?? <String, dynamic>{};
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF9F5F1), Color(0xFFEDE1D7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: userDoc.snapshots(),
+            builder: (context, snap) {
+              final data = snap.data?.data() ?? <String, dynamic>{};
 
-          // Precompila UNA volta (così non ti riscrive mentre digiti)
-          if (!_prefilled) {
-            _prefilled = true;
-            _firstName.text = (data['firstName'] ?? '').toString();
-            _lastName.text = (data['lastName'] ?? '').toString();
-            _phone.text = (data['phone'] ?? '').toString();
-          }
+              // Precompila UNA volta (così non ti riscrive mentre digiti)
+              if (!_prefilled) {
+                _prefilled = true;
+                _firstName.text = (data['firstName'] ?? '').toString();
+                _lastName.text = (data['lastName'] ?? '').toString();
+                _phone.text = (data['phone'] ?? '').toString();
+              }
 
-          final phoneVerified = (data['phoneVerified'] as bool?) ?? false;
+              final phoneVerified = (data['phoneVerified'] as bool?) ?? false;
 
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black12),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Row(
-                      children: [
-                        const CircleAvatar(child: Icon(Icons.person)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Account',
-                                  style: TextStyle(fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 4),
-                              Text(email.isEmpty ? '—' : email,
-                                  style: const TextStyle(color: Colors.black54)),
-                              const SizedBox(height: 6),
-                              Row(
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.92),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 14,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const CircleAvatar(child: Icon(Icons.person)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    phoneVerified ? Icons.verified : Icons.error_outline,
-                                    size: 18,
-                                    color: phoneVerified ? Colors.green : Colors.orange,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    phoneVerified ? 'Telefono verificato' : 'Telefono da verificare',
-                                    style: TextStyle(
-                                      color: phoneVerified ? Colors.green : Colors.orange,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                  const Text('Account',
+                                      style: TextStyle(fontWeight: FontWeight.w800)),
+                                  const SizedBox(height: 4),
+                                  Text(email.isEmpty ? '—' : email,
+                                      style: const TextStyle(color: Colors.black54)),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        phoneVerified ? Icons.verified : Icons.error_outline,
+                                        size: 18,
+                                        color: phoneVerified ? Colors.green : Colors.orange,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        phoneVerified
+                                            ? 'Telefono verificato'
+                                            : 'Telefono da verificare',
+                                        style: TextStyle(
+                                          color: phoneVerified ? Colors.green : Colors.orange,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      )
+                                    ],
                                   )
                                 ],
-                              )
-                            ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextFormField(
+                        controller: _firstName,
+                        decoration: InputDecoration(
+                          labelText: 'Nome *',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.92),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                        validator: (v) {
+                          final s = (v ?? '').trim();
+                          if (s.isEmpty) return 'Inserisci il nome';
+                          if (s.length < 2) return 'Nome troppo corto';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
 
-                  TextFormField(
-                    controller: _firstName,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome *',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (v) {
-                      final s = (v ?? '').trim();
-                      if (s.isEmpty) return 'Inserisci il nome';
-                      if (s.length < 2) return 'Nome troppo corto';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _lastName,
+                        decoration: InputDecoration(
+                          labelText: 'Cognome *',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.92),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (v) {
+                          final s = (v ?? '').trim();
+                          if (s.isEmpty) return 'Inserisci il cognome';
+                          if (s.length < 2) return 'Cognome troppo corto';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
 
-                  TextFormField(
-                    controller: _lastName,
-                    decoration: const InputDecoration(
-                      labelText: 'Cognome *',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (v) {
-                      final s = (v ?? '').trim();
-                      if (s.isEmpty) return 'Inserisci il cognome';
-                      if (s.length < 2) return 'Cognome troppo corto';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _phone,
+                        decoration: InputDecoration(
+                          labelText: 'Telefono (formato +39...) *',
+                          helperText: 'Se cambi numero, verrà richiesto un SMS.',
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.92),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (v) {
+                          final s = _normPhone(v ?? '');
+                          if (s.isEmpty) return 'Inserisci il numero di telefono';
+                          if (!s.startsWith('+')) return 'Usa formato internazionale (es. +39333...)';
+                          if (s.length < 8) return 'Numero non valido';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
 
-                  TextFormField(
-                    controller: _phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Telefono (formato +39...) *',
-                      border: OutlineInputBorder(),
-                      helperText: 'Se cambi numero, verrà richiesto un SMS.',
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (v) {
-                      final s = _normPhone(v ?? '');
-                      if (s.isEmpty) return 'Inserisci il numero di telefono';
-                      if (!s.startsWith('+')) return 'Usa formato internazionale (es. +39333...)';
-                      if (s.length < 8) return 'Numero non valido';
-                      return null;
-                    },
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accent,
+                            foregroundColor: cream,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: _loading
+                              ? null
+                              : () => _save(user: user, userDoc: userDoc, currentData: data),
+                          child: _loading
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Text('Salva'),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _loading
-                          ? null
-                          : () => _save(user: user, userDoc: userDoc, currentData: data),
-                      child: _loading
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Salva'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

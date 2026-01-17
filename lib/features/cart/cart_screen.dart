@@ -9,14 +9,21 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
+    final accent = const Color(0xFFB5654B);
+    final accentDark = const Color(0xFF7A3E2B);
+    final cream = const Color(0xFFF7F2EC);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
         title: const Text('Carrello'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: accentDark,
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -24,82 +31,124 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: cart.items.isEmpty
-                  ? const Center(child: Text('Carrello vuoto'))
-                  : ListView.separated(
-                      itemCount: cart.items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (context, i) {
-                        final it = cart.items[i];
-                        return Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: Colors.black12),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(it.name,
-                                        style: const TextStyle(
-                                            fontSize: 16, fontWeight: FontWeight.w800)),
-                                    const SizedBox(height: 4),
-                                    Text(it.variantLabel,
-                                        style: const TextStyle(color: Colors.black54)),
-                                    const SizedBox(height: 6),
-                                    Text('€${it.price.toStringAsFixed(2)}'),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () => cart.dec(it.key),
-                                icon: const Icon(Icons.remove_circle_outline),
-                              ),
-                              Text('${it.qty}', style: const TextStyle(fontSize: 16)),
-                              IconButton(
-                                onPressed: () => cart.inc(it.key),
-                                icon: const Icon(Icons.add_circle_outline),
-                              ),
-                              IconButton(
-                                onPressed: () => cart.remove(it.key),
-                                icon: const Icon(Icons.delete_outline),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-            ),
-            const SizedBox(height: 10),
-            Row(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF9F5F1), Color(0xFFEDE1D7)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               children: [
                 Expanded(
-                  child: Text(
-                    'Totale: €${cart.total.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  child: cart.items.isEmpty
+                      ? const Center(child: Text('Carrello vuoto'))
+                      : ListView.separated(
+                          itemCount: cart.items.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 10),
+                          itemBuilder: (context, i) {
+                            final it = cart.items[i];
+                            return Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.92),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.06),
+                                    blurRadius: 14,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(it.name,
+                                            style: const TextStyle(
+                                                fontSize: 16, fontWeight: FontWeight.w800)),
+                                        const SizedBox(height: 4),
+                                        Text(it.variantLabel,
+                                            style: const TextStyle(color: Colors.black54)),
+                                        const SizedBox(height: 6),
+                                        Text('€${it.price.toStringAsFixed(2)}'),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => cart.dec(it.key),
+                                    icon: const Icon(Icons.remove_circle_outline),
+                                  ),
+                                  Text('${it.qty}', style: const TextStyle(fontSize: 16)),
+                                  IconButton(
+                                    onPressed: () => cart.inc(it.key),
+                                    icon: const Icon(Icons.add_circle_outline),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => cart.remove(it.key),
+                                    icon: const Icon(Icons.delete_outline),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.92),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 14,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Totale: €${cart.total.toStringAsFixed(2)}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accent,
+                          foregroundColor: cream,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: cart.items.isEmpty ? null : () => context.push('/checkout'),
+                        child: const Text('Vai al pagamento'),
+                      )
+                    ],
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: cart.items.isEmpty ? null : () => context.push('/checkout'),
-                  child: const Text('Vai al pagamento'),
-                )
+                const SizedBox(height: 10),
+                if (cart.items.isNotEmpty)
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: accentDark,
+                    ),
+                    onPressed: cart.clear,
+                    child: const Text('Svuota carrello'),
+                  ),
               ],
             ),
-            const SizedBox(height: 10),
-            if (cart.items.isNotEmpty)
-              OutlinedButton(
-                onPressed: cart.clear,
-                child: const Text('Svuota carrello'),
-              ),
-          ],
+          ),
         ),
       ),
     );
