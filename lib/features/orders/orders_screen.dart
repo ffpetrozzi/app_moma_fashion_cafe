@@ -132,6 +132,8 @@ class OrdersScreen extends StatelessWidget {
                   final status = (data['status'] ?? 'pending').toString();
                   final total = (data['total'] as num?)?.toDouble() ?? 0.0;
                   final payment = (data['paymentMethod'] ?? '').toString();
+                  final riderName = (data['assignedRiderName'] ?? '').toString();
+                  final riderId = (data['assignedRiderId'] ?? '').toString();
 
                   final items = (data['items'] as List?) ?? [];
                   final itemsCount = items.fold<int>(0, (s, e) {
@@ -207,6 +209,11 @@ class OrdersScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (riderName.isNotEmpty || riderId.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text('Rider: ${riderName.isEmpty ? riderId : riderName}'),
+                          _LiveLocationTile(userId: riderId),
+                        ],
                       ],
                     ),
                   );
@@ -222,5 +229,50 @@ class OrdersScreen extends StatelessWidget {
   String _formatDate(DateTime d) {
     String two(int n) => n.toString().padLeft(2, '0');
     return '${two(d.day)}/${two(d.month)}/${d.year} ${two(d.hour)}:${two(d.minute)}';
+  }
+}
+
+class _LiveLocationTile extends StatelessWidget {
+  final String userId;
+
+  const _LiveLocationTile({required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    if (userId.isEmpty) {
+      return const Text('Posizione rider: —');
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('live_locations')
+          .doc(userId)
+          .snapshots(),
+      builder: (context, snap) {
+        if (!snap.hasData) {
+          return const Text('Posizione rider: —');
+        }
+
+        final data = snap.data!.data();
+        if (data == null) {
+          return const Text('Posizione rider: —');
+        }
+
+        final lat = (data['lat'] as num?)?.toDouble();
+        final lng = (data['lng'] as num?)?.toDouble();
+        final updatedAt = data['updatedAt'] as Timestamp?;
+        final timeStr = updatedAt == null
+            ? '—'
+            : '${updatedAt.toDate().hour.toString().padLeft(2, '0')}:${updatedAt.toDate().minute.toString().padLeft(2, '0')}';
+
+        if (lat == null || lng == null) {
+          return const Text('Posizione rider: —');
+        }
+
+        return Text(
+          'Posizione rider: ${lat.toStringAsFixed(5)}, ${lng.toStringAsFixed(5)} (agg. $timeStr)',
+        );
+      },
+    );
   }
 }

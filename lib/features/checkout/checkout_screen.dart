@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,35 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _loading = false;
   String? _error;
 
+  Future<Map<String, dynamic>> _loadCustomerProfile(User user) async {
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    return doc.data() ?? {};
+  }
+
+  Future<GeoPoint?> _currentGeoPoint() async {
+    try {
+      final enabled = await Geolocator.isLocationServiceEnabled();
+      if (!enabled) return null;
+
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        return null;
+      }
+
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      return GeoPoint(pos.latitude, pos.longitude);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _placeOrder(String paymentMethod) async {
     final cart = context.read<CartProvider>();
     final user = FirebaseAuth.instance.currentUser;
@@ -30,8 +60,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     });
 
     try {
+      final profile = await _loadCustomerProfile(user);
+      final firstName = (profile['firstName'] ?? '').toString();
+      final lastName = (profile['lastName'] ?? '').toString();
+      final customerName = '$firstName $lastName'.trim();
+      final customerPhone =
+          (profile['phone'] ?? user.phoneNumber ?? '').toString();
+      final customerLocation = await _currentGeoPoint();
+
       await FirebaseFirestore.instance.collection('orders').add({
         'userId': user.uid,
+        'customerName': customerName,
+        'customerPhone': customerPhone,
+        'customerLocation': customerLocation,
         'items': cart.items.map((i) {
           return {
             'cocktailId': i.cocktailId,

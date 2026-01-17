@@ -66,6 +66,14 @@ class _CustomerHomeState extends State<CustomerHome> {
                     context.push('/orders');
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.badge),
+                  title: const Text('Area staff'),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    context.push('/staff');
+                  },
+                ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.logout),
@@ -111,11 +119,28 @@ class _CustomerHomeState extends State<CustomerHome> {
       ).listen((p) {
         if (!mounted) return;
         setState(() => _pos = p);
+        _updateLiveLocation(p);
       });
     } catch (_) {
       if (!mounted) return;
       setState(() => _locDenied = true);
     }
+  }
+
+  Future<void> _updateLiveLocation(Position p) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance.collection('live_locations').doc(user.uid).set(
+      {
+        'userId': user.uid,
+        'role': 'customer',
+        'lat': p.latitude,
+        'lng': p.longitude,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
   }
 
   double _distanceMeters(Position? p) {

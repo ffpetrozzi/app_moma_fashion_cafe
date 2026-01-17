@@ -9,6 +9,7 @@ import '../features/cart/cart_screen.dart';
 import '../features/checkout/checkout_screen.dart';
 import '../features/orders/orders_screen.dart';
 import '../features/profile/profile_screen.dart';
+import '../features/staff/staff_hub_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -48,6 +49,10 @@ final router = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/staff',
+      builder: (context, state) => const StaffHubScreen(),
     ),
   ],
 );
