@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../cart/cart_provider.dart';
+import '../../app/widgets/app_snackbar.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -50,8 +51,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       if (mounted) {
         context.go('/'); // torniamo alla Home
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ordine inviato 🍸')),
+        AppSnackBar.show(
+          context,
+          'Ordine inviato 🍸',
+          type: AppSnackBarType.success,
         );
       }
     } catch (e) {

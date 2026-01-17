@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/widgets/app_snackbar.dart';
+
 import '../../core/models/user_profile.dart';
 import '../../core/services/firestore_service.dart';
 import '../home/customer_home.dart';
@@ -106,8 +108,10 @@ class _AuthGateState extends State<AuthGate> {
                       onPressed: () async {
                         await user.sendEmailVerification();
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Email di verifica inviata')),
+                          AppSnackBar.show(
+                            context,
+                            'Email di verifica inviata',
+                            type: AppSnackBarType.success,
                           );
                         }
                       },

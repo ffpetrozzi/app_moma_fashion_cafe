@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/widgets/app_snackbar.dart';
 class CustomerHome extends StatefulWidget {
   const CustomerHome({super.key});
 
@@ -565,12 +566,10 @@ class _CustomerHomeState extends State<CustomerHome> {
                                 ? () => context.push('/menu')
                                 : () {
                                     if (!profileComplete) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Completa il profilo (nome, cognome, telefono verificato) per ordinare.',
-                                          ),
-                                        ),
+                                      AppSnackBar.show(
+                                        context,
+                                        'Completa il profilo (nome, cognome, telefono verificato) per ordinare.',
+                                        type: AppSnackBarType.info,
                                       );
                                       context.push('/profile');
                                     }

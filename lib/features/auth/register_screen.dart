@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/widgets/app_snackbar.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -41,8 +43,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await cred.user?.sendEmailVerification();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email di verifica inviata. Controlla la posta.')),
+        AppSnackBar.show(
+          context,
+          'Email di verifica inviata. Controlla la posta.',
+          type: AppSnackBarType.success,
         );
         context.go('/');
       }

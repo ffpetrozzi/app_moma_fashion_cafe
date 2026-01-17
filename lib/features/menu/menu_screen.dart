@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../cart/cart_provider.dart';
+import '../../app/widgets/app_snackbar.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -237,8 +238,10 @@ class _CocktailCard extends StatelessWidget {
                     price: price,
                     qty: 1,
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Aggiunto: $name ($label)')),
+                  AppSnackBar.show(
+                    context,
+                    'Aggiunto: $name ($label)',
+                    type: AppSnackBarType.success,
                   );
                 },
                 child: Text('$label • €${price.toStringAsFixed(2)}'),

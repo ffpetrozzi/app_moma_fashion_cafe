@@ -16,6 +16,20 @@ class AppTheme {
           borderRadius: BorderRadius.all(Radius.circular(24)),
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        elevation: 6,
+        showCloseIcon: true,
+        backgroundColor: base.colorScheme.surface,
+        closeIconColor: base.colorScheme.primary,
+        contentTextStyle: base.textTheme.bodyMedium?.copyWith(
+          color: base.colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
     );
   }
 }
